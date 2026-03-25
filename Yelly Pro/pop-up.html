@@ -1,0 +1,84 @@
+<!-- =============================================
+     POPUP OFERTA - Cole este código no Rich Text do HubSpot
+     ============================================= -->
+<div id="oferta-overlay">
+    <div id="oferta-popup" aria-modal="true" aria-labelledby="oferta-titulo" role="dialog"><button id="oferta-close"
+            aria-label="Fechar" onclick="fecharPopup()">✕</button>
+        <p id="oferta-titulo">Oferta <strong>VOLTA16</strong> encerra em</p>
+        <div id="oferta-timer">
+            <div class="timer-bloco"><span class="timer-numero" id="t-horas">08</span> <span
+                    class="timer-label">horas</span></div>
+            <span class="timer-sep">:</span>
+            <div class="timer-bloco"><span class="timer-numero" id="t-min">40</span> <span
+                    class="timer-label">min</span></div>
+            <span class="timer-sep">:</span>
+            <div class="timer-bloco"><span class="timer-numero" id="t-seg">32</span> <span
+                    class="timer-label">seg</span></div>
+        </div>
+        <div id="oferta-cupom" title="Clique para copiar" onclick="copiarCupom()">Use o cupom <strong>VOLTA16</strong>
+            <span class="cupom-hint">Clique para copiar</span></div>
+        <div id="copiad-msg">✓ Cupom copiado!</div>
+        <!-- Altere o href abaixo para o link da sua página de compra --> <a id="oferta-btn"
+            href="https://checkout.yelly.com.br/checkout-dados/promoespecial/max/pro?cupom=VOLTA16" target="_blank"
+            rel="noopener">Garantir agora</a>
+    </div>
+</div>
+<script>
+    // ── Timer de 12h fixo: usa localStorage para persistir entre recargas ──
+    var DURACAO = 12 * 3600; // 12 horas em segundos
+
+    function getExpiracao() {
+        var exp = localStorage.getItem('oferta_expiracao');
+        var agora = Math.floor(Date.now() / 1000);
+        // Se não existe ou já expirou, cria um novo ciclo
+        if (!exp || agora >= parseInt(exp)) {
+            var novaExp = agora + DURACAO;
+            localStorage.setItem('oferta_expiracao', novaExp);
+            return novaExp;
+        }
+        return parseInt(exp);
+    }
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function atualizarTimer() {
+        var agora = Math.floor(Date.now() / 1000);
+        var expiracao = getExpiracao();
+        var restante = expiracao - agora;
+
+        if (restante < 0) restante = 0;
+
+        var h = Math.floor(restante / 3600);
+        var m = Math.floor((restante % 3600) / 60);
+        var s = restante % 60;
+
+        document.getElementById('t-horas').textContent = pad(h);
+        document.getElementById('t-min').textContent = pad(m);
+        document.getElementById('t-seg').textContent = pad(s);
+    }
+
+    atualizarTimer(); // renderiza imediatamente sem piscar
+    setInterval(atualizarTimer, 1000);
+
+    // ── Fechar popup ──
+    function fecharPopup() {
+        var overlay = document.getElementById('oferta-overlay');
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.25s';
+        setTimeout(function () { overlay.style.display = 'none'; }, 250);
+    }
+
+    // Fechar ao clicar fora do popup
+    document.getElementById('oferta-overlay').addEventListener('click', function (e) {
+        if (e.target === this) fecharPopup();
+    });
+
+    // ── Copiar cupom ──
+    function copiarCupom() {
+        navigator.clipboard.writeText('VOLTA16').then(function () {
+            var msg = document.getElementById('copiad-msg');
+            msg.style.opacity = '1';
+            setTimeout(function () { msg.style.opacity = '0'; }, 2000);
+        });
+    }
+</script>
